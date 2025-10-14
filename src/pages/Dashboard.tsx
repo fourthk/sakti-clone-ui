@@ -89,7 +89,7 @@ const Dashboard = () => {
     <div>
       <h1 
         className="text-5xl font-bold mb-8"
-        style={{ color: "#000000" }}
+        style={{ color: "#253040" }}
       >
         Dashboard
       </h1>
