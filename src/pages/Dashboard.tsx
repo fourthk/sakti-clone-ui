@@ -36,7 +36,7 @@ const Dashboard = () => {
     datasets: [
       {
         data: [35, 30, 35],
-        backgroundColor: ['#9AE6B4', '#68D391', '#48BB78'],
+        backgroundColor: ['#384E66', '#4A6382', '#8FA5C1'],
         borderColor: ['#ffffff'],
         borderWidth: 2,
       },
