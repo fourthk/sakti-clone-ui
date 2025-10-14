@@ -15,7 +15,7 @@ const ChartCard = ({ title, description, children }: ChartCardProps) => {
       className="rounded-lg p-6 shadow-sm"
       style={{
         backgroundColor: "#FFFFFF",
-        border: "1px solid #E5E7EB",
+        border: "1px solid #384E66",
       }}
     >
       <div className="mb-4">
