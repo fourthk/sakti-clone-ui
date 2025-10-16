@@ -26,6 +26,19 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const mockAssets = [
   {
@@ -72,6 +85,9 @@ const CMDBCategory = () => {
   const { category } = useParams();
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState<typeof mockAssets[0] | null>(null);
+  const [newStatus, setNewStatus] = useState("");
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -88,6 +104,18 @@ const CMDBCategory = () => {
 
   const getCategoryColor = (cat: string) => {
     return "bg-blue-100 text-blue-800 border-blue-300";
+  };
+
+  const handleChangeStatus = (asset: typeof mockAssets[0]) => {
+    setSelectedAsset(asset);
+    setNewStatus(asset.status);
+    setIsStatusModalOpen(true);
+  };
+
+  const handleStatusSubmit = () => {
+    // Handle status update logic here
+    setIsStatusModalOpen(false);
+    setSelectedAsset(null);
   };
 
   return (
@@ -112,13 +140,18 @@ const CMDBCategory = () => {
       <div className="flex gap-3 mb-6">
         <div className="flex-1 relative">
           <Search
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            className="absolute left-3 top-1/2 transform -translate-y-1/2"
+            style={{ color: "#384E66" }}
             size={20}
           />
           <Input
-            placeholder="Search"
-            className="pl-10 bg-white border-gray-300"
-            style={{ borderRadius: "8px" }}
+            placeholder="Search assets..."
+            className="pl-10 bg-white font-medium"
+            style={{ 
+              borderRadius: "8px",
+              borderColor: "#384E66",
+              borderWidth: "2px"
+            }}
           />
         </div>
         <Button
@@ -207,7 +240,7 @@ const CMDBCategory = () => {
                         <MoreVertical size={18} />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent align="end" className="bg-white z-50">
                       <DropdownMenuItem
                         onClick={() => navigate(`/cmdb/detail/${asset.id}`)}
                       >
@@ -218,7 +251,9 @@ const CMDBCategory = () => {
                       >
                         History
                       </DropdownMenuItem>
-                      <DropdownMenuItem>Change Status</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleChangeStatus(asset)}>
+                        Change Status
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -260,6 +295,46 @@ const CMDBCategory = () => {
           </PaginationItem>
         </PaginationContent>
       </Pagination>
+
+      {/* Change Status Modal */}
+      <Dialog open={isStatusModalOpen} onOpenChange={setIsStatusModalOpen}>
+        <DialogContent className="sm:max-w-md bg-white">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold" style={{ color: "#253040" }}>
+              Change Status
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <Select value={newStatus} onValueChange={setNewStatus}>
+              <SelectTrigger className="w-full border-2" style={{ borderColor: "#384E66", borderRadius: "12px" }}>
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent className="bg-white z-50">
+                <SelectItem value="Active">Active</SelectItem>
+                <SelectItem value="Inactive">Inactive</SelectItem>
+                <SelectItem value="Maintenance">Maintenance</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex gap-3">
+            <Button
+              onClick={() => setIsStatusModalOpen(false)}
+              variant="outline"
+              className="flex-1"
+              style={{ borderColor: "#384E66", borderRadius: "8px", borderWidth: "2px" }}
+            >
+              cancel
+            </Button>
+            <Button
+              onClick={handleStatusSubmit}
+              className="flex-1"
+              style={{ backgroundColor: "#384E66", color: "white", borderRadius: "8px" }}
+            >
+              ok
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
