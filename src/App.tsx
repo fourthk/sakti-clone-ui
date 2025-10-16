@@ -7,6 +7,9 @@ import DashboardLayout from "./components/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
 import ChangeManagement from "./pages/ChangeManagement";
 import CMDB from "./pages/CMDB";
+import CMDBCategory from "./pages/CMDBCategory";
+import CMDBDetail from "./pages/CMDBDetail";
+import CMDBHistory from "./pages/CMDBHistory";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +25,9 @@ const App = () => (
             <Route path="/" element={<Dashboard />} />
             <Route path="/change-management" element={<ChangeManagement />} />
             <Route path="/cmdb" element={<CMDB />} />
+            <Route path="/cmdb/:category" element={<CMDBCategory />} />
+            <Route path="/cmdb/detail/:id" element={<CMDBDetail />} />
+            <Route path="/cmdb/history/:id" element={<CMDBHistory />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
