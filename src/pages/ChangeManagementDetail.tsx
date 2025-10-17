@@ -72,7 +72,7 @@ const ChangeManagementDetail = () => {
           className="text-5xl font-bold"
           style={{ color: "#253040" }}
         >
-          Change Request Detail - {change.id}
+          Request Detail
         </h1>
       </div>
 

@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import ChangeManagement from "./pages/ChangeManagement";
 import ChangeManagementDetail from "./pages/ChangeManagementDetail";
 import ChangeManagementCalendar from "./pages/ChangeManagementCalendar";
+import ChangeManagementForm from "./pages/ChangeManagementForm";
 import CMDB from "./pages/CMDB";
 import CMDBCategory from "./pages/CMDBCategory";
 import CMDBDetail from "./pages/CMDBDetail";
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/" element={<Dashboard />} />
             <Route path="/change-management" element={<ChangeManagement />} />
             <Route path="/change-management/detail/:id" element={<ChangeManagementDetail />} />
+            <Route path="/change-management/form/:id" element={<ChangeManagementForm />} />
             <Route path="/change-management/calendar" element={<ChangeManagementCalendar />} />
             <Route path="/cmdb" element={<CMDB />} />
             <Route path="/cmdb/:category" element={<CMDBCategory />} />

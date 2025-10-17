@@ -15,43 +15,41 @@ const DashboardLayout = () => {
 
   return (
     <div className="min-h-screen bg-background w-full">
-      {/* Fixed Header - 200px height */}
+      {/* Fixed Header */}
       <header 
         className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6"
         style={{ 
-          height: "200px", 
+          height: "80px", 
           backgroundColor: "#384E66"
         }}
       >
         <div className="flex items-center gap-4">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-white hover:bg-white/10 p-3 rounded transition-colors"
+            className="text-white hover:bg-white/10 p-2 rounded transition-colors"
             aria-label="Toggle sidebar"
           >
-            <Menu size={50} />
+            <Menu size={24} />
           </button>
           <img 
             src={saktiLogo} 
             alt="SAKTI Logo" 
-            className="h-24 object-contain"
+            className="h-12 object-contain"
           />
         </div>
 
         <div className="flex items-center gap-4">
           <button 
-            className="text-white hover:bg-white/10 p-3 rounded transition-colors"
+            className="text-white hover:bg-white/10 p-2 rounded transition-colors"
             aria-label="Notifications"
-            style={{ width: "50px", height: "50px" }}
           >
-            <Bell size={50} />
+            <Bell size={24} />
           </button>
           <button 
-            className="text-white hover:bg-white/10 p-3 rounded-full transition-colors"
+            className="text-white hover:bg-white/10 p-2 rounded-full transition-colors"
             aria-label="Profile"
-            style={{ width: "50px", height: "50px" }}
           >
-            <User size={50} />
+            <User size={24} />
           </button>
         </div>
       </header>
@@ -63,9 +61,9 @@ const DashboardLayout = () => {
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
         style={{
-          top: "200px",
+          top: "80px",
           width: "270px",
-          height: "calc(100vh - 200px)",
+          height: "calc(100vh - 80px)",
           backgroundColor: "#384E66",
         }}
       >
@@ -95,7 +93,7 @@ const DashboardLayout = () => {
           "transition-all duration-300 ease-in-out",
           sidebarOpen ? "ml-[270px]" : "ml-0"
         )}
-        style={{ marginTop: "200px", minHeight: "calc(100vh - 200px)" }}
+        style={{ marginTop: "80px", minHeight: "calc(100vh - 80px)" }}
       >
         <div className="p-8">
           <Outlet />

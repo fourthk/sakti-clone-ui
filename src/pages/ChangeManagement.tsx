@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Calendar, Search, Filter, MoreVertical, ChevronRight, ArrowLeft } from "lucide-react";
+import { Search, MoreVertical } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,9 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
 
@@ -104,17 +102,6 @@ const ChangeManagement = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("All");
-  const [showFormModal, setShowFormModal] = useState(false);
-  const [showDeniedModal, setShowDeniedModal] = useState(false);
-  const [showApproveModal, setShowApproveModal] = useState(false);
-  const [selectedChange, setSelectedChange] = useState<any>(null);
-  const [denialReason, setDenialReason] = useState("");
-  const [approvalForm, setApprovalForm] = useState({
-    impact: "",
-    implementation: "",
-    schedule: "",
-    technician: ""
-  });
 
   const itemsPerPage = 5;
   const filteredChanges = statusFilter === "All" 
@@ -128,37 +115,22 @@ const ChangeManagement = () => {
   );
 
   const summaryData = [
-    { label: "Laporan Masuk", count: mockChanges.length, color: "bg-blue-500" },
-    { label: "Changes in Review", count: mockChanges.filter(c => c.status === "In Review").length, color: "bg-yellow-500" },
-    { label: "Approved", count: mockChanges.filter(c => c.status === "Approved").length, color: "bg-green-500" },
-    { label: "Completed", count: mockChanges.filter(c => c.status === "Completed").length, color: "bg-gray-500" }
+    { label: "Laporan Masuk", count: mockChanges.length },
+    { label: "Changes in Review", count: mockChanges.filter(c => c.status === "In Review").length },
+    { label: "Approved", count: mockChanges.filter(c => c.status === "Approved").length },
+    { label: "Completed", count: mockChanges.filter(c => c.status === "Completed").length }
   ];
 
   const recentActivities = mockChanges
     .filter(c => c.status === "Approved")
-    .slice(0, 5);
+    .slice(0, 3);
 
   const handleFormClick = (change: any) => {
-    setSelectedChange(change);
-    setShowFormModal(true);
+    navigate(`/change-management/form/${change.id}`, { state: { change } });
   };
 
   const handleDetailClick = (change: any) => {
     navigate(`/change-management/detail/${change.id}`, { state: { change } });
-  };
-
-  const handleDenySubmit = () => {
-    console.log("Denied:", denialReason);
-    setShowDeniedModal(false);
-    setShowFormModal(false);
-    setDenialReason("");
-  };
-
-  const handleApproveSubmit = () => {
-    console.log("Approved:", approvalForm);
-    setShowApproveModal(false);
-    setShowFormModal(false);
-    setApprovalForm({ impact: "", implementation: "", schedule: "", technician: "" });
   };
 
   return (
@@ -175,13 +147,8 @@ const ChangeManagement = () => {
         {summaryData.map((item, index) => (
           <Card key={index} style={{ backgroundColor: "#FDFDFD", borderColor: "#384E66" }}>
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">{item.label}</p>
-                  <p className="text-3xl font-bold" style={{ color: "#253040" }}>{item.count}</p>
-                </div>
-                <div className={`w-12 h-12 rounded-full ${item.color}`}></div>
-              </div>
+              <p className="text-sm text-gray-600 mb-2">{item.label}</p>
+              <p className="text-3xl font-bold" style={{ color: "#253040" }}>{item.count}</p>
             </CardContent>
           </Card>
         ))}
@@ -195,16 +162,13 @@ const ChangeManagement = () => {
           onClick={() => navigate("/change-management/calendar")}
         >
           <CardHeader>
-            <CardTitle className="flex items-center justify-between" style={{ color: "#253040" }}>
-              <span>Change Calendar</span>
-              <ChevronRight size={24} />
-            </CardTitle>
+            <CardTitle style={{ color: "#253040" }}>Change Calendar</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-center py-8">
-              <Calendar size={64} style={{ color: "#384E66" }} />
-            </div>
-            <p className="text-center text-gray-600">Click to view detailed calendar</p>
+            <Calendar
+              mode="single"
+              className="rounded-md border-0"
+            />
           </CardContent>
         </Card>
 
@@ -234,18 +198,17 @@ const ChangeManagement = () => {
           <div className="flex items-center justify-between mb-4">
             <CardTitle style={{ color: "#253040" }}>Change Requests</CardTitle>
             <div className="flex items-center gap-3">
-              <div className="relative">
+              <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                 <Input 
-                  placeholder="Search changes..." 
-                  className="pl-10 w-64"
-                  style={{ borderColor: "#384E66" }}
+                  placeholder="Search" 
+                  className="pl-10 w-full"
+                  style={{ borderColor: "#E5E7EB", backgroundColor: "white" }}
                 />
               </div>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-40" style={{ backgroundColor: "#3B82F6", color: "white", borderColor: "#3B82F6" }}>
-                  <Filter size={16} className="mr-2" />
-                  <SelectValue />
+                <SelectTrigger className="w-40" style={{ backgroundColor: "#384E66", color: "white", borderColor: "#384E66" }}>
+                  <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="All">All Status</SelectItem>
@@ -263,16 +226,16 @@ const ChangeManagement = () => {
           <Table>
             <TableHeader>
               <TableRow style={{ backgroundColor: "#384E66" }}>
-                <TableHead className="text-white">Ticket ID</TableHead>
-                <TableHead className="text-white">Jenis Perubahan</TableHead>
-                <TableHead className="text-white">Dinas / Pengaju</TableHead>
-                <TableHead className="text-white">Aset Terdampak</TableHead>
-                <TableHead className="text-white">PIC</TableHead>
-                <TableHead className="text-white">Jadwal Implementasi</TableHead>
-                <TableHead className="text-white">Status</TableHead>
-                <TableHead className="text-white">Skor Risiko</TableHead>
-                <TableHead className="text-white">Updated At</TableHead>
-                <TableHead className="text-white">Action</TableHead>
+                <TableHead className="text-white w-32">Request ID</TableHead>
+                <TableHead className="text-white w-48">Jenis Perubahan</TableHead>
+                <TableHead className="text-white w-40">Dinas / Pengaju</TableHead>
+                <TableHead className="text-white w-48">Aset Terdampak</TableHead>
+                <TableHead className="text-white w-32">PIC</TableHead>
+                <TableHead className="text-white w-44">Jadwal Implementasi</TableHead>
+                <TableHead className="text-white w-32">Status</TableHead>
+                <TableHead className="text-white w-28">Skor Risiko</TableHead>
+                <TableHead className="text-white w-40">Updated At</TableHead>
+                <TableHead className="text-white w-20">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -292,22 +255,21 @@ const ChangeManagement = () => {
                   </TableCell>
                   <TableCell>{change.updatedAt}</TableCell>
                   <TableCell>
-                    <div className="flex gap-2">
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => handleFormClick(change)}
-                      >
-                        Form
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => handleDetailClick(change)}
-                      >
-                        Detail
-                      </Button>
-                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleFormClick(change)}>
+                          Form
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDetailClick(change)}>
+                          Detail
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))}
@@ -345,126 +307,6 @@ const ChangeManagement = () => {
           </div>
         </CardContent>
       </Card>
-
-      {/* Form Modal */}
-      <Dialog open={showFormModal} onOpenChange={setShowFormModal}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Change Request Form - {selectedChange?.id}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>Jenis Perubahan</Label>
-              <Input value={selectedChange?.type} readOnly />
-            </div>
-            <div>
-              <Label>Alasan</Label>
-              <Textarea value={selectedChange?.reason} readOnly rows={3} />
-            </div>
-            <div>
-              <Label>Tujuan</Label>
-              <Textarea value={selectedChange?.purpose} readOnly rows={2} />
-            </div>
-            <div>
-              <Label>Aset Terdampak</Label>
-              <Input value={selectedChange?.affectedAssets} readOnly />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button 
-              variant="destructive" 
-              onClick={() => {
-                setShowFormModal(false);
-                setShowDeniedModal(true);
-              }}
-            >
-              Denied
-            </Button>
-            <Button 
-              onClick={() => {
-                setShowFormModal(false);
-                setShowApproveModal(true);
-              }}
-              style={{ backgroundColor: "#384E66" }}
-            >
-              Approve
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Denied Modal */}
-      <Dialog open={showDeniedModal} onOpenChange={setShowDeniedModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Alasan Penolakan</DialogTitle>
-          </DialogHeader>
-          <div>
-            <Label>Reason for Denial</Label>
-            <Textarea 
-              value={denialReason} 
-              onChange={(e) => setDenialReason(e.target.value)}
-              placeholder="Enter reason for denying this change request..."
-              rows={4}
-            />
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowDeniedModal(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={handleDenySubmit}>Submit Denial</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Approve Modal */}
-      <Dialog open={showApproveModal} onOpenChange={setShowApproveModal}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Approval Form - {selectedChange?.id}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>Dampak & Risiko</Label>
-              <Textarea 
-                value={approvalForm.impact}
-                onChange={(e) => setApprovalForm({...approvalForm, impact: e.target.value})}
-                placeholder="Describe impact and risks..."
-                rows={3}
-              />
-            </div>
-            <div>
-              <Label>Rencana Implementasi</Label>
-              <Textarea 
-                value={approvalForm.implementation}
-                onChange={(e) => setApprovalForm({...approvalForm, implementation: e.target.value})}
-                placeholder="Implementation plan..."
-                rows={3}
-              />
-            </div>
-            <div>
-              <Label>Jadwal Pelaksanaan</Label>
-              <Input 
-                type="datetime-local"
-                value={approvalForm.schedule}
-                onChange={(e) => setApprovalForm({...approvalForm, schedule: e.target.value})}
-              />
-            </div>
-            <div>
-              <Label>Assign to Technician</Label>
-              <Input 
-                value={approvalForm.technician}
-                onChange={(e) => setApprovalForm({...approvalForm, technician: e.target.value})}
-                placeholder="Technician name..."
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowApproveModal(false)}>Cancel</Button>
-            <Button onClick={handleApproveSubmit} style={{ backgroundColor: "#384E66" }}>
-              Submit Approval
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

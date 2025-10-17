@@ -154,18 +154,21 @@ const CMDBCategory = () => {
             }}
           />
         </div>
-        <Button
-          style={{
-            backgroundColor: "#384E66",
-            color: "white",
-            borderRadius: "8px",
-            padding: "0 24px",
-          }}
-          className="hover:opacity-90"
-        >
-          <Filter size={18} className="mr-2" />
-          Filter
-        </Button>
+        <Select defaultValue="All">
+          <SelectTrigger 
+            className="w-40" 
+            style={{ backgroundColor: "#384E66", color: "white", borderColor: "#384E66" }}
+          >
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="All">All Status</SelectItem>
+            <SelectItem value="Active">Active</SelectItem>
+            <SelectItem value="Inactive">Inactive</SelectItem>
+            <SelectItem value="Maintenance">Maintenance</SelectItem>
+            <SelectItem value="Retired">Retired</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Table */}
@@ -253,6 +256,9 @@ const CMDBCategory = () => {
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleChangeStatus(asset)}>
                         Change Status
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => console.log("Edit asset:", asset.id)}>
+                        Edit
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
