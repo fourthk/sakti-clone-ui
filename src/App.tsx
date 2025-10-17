@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DashboardLayout from "./components/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
 import ChangeManagement from "./pages/ChangeManagement";
+import ChangeManagementDetail from "./pages/ChangeManagementDetail";
+import ChangeManagementCalendar from "./pages/ChangeManagementCalendar";
 import CMDB from "./pages/CMDB";
 import CMDBCategory from "./pages/CMDBCategory";
 import CMDBDetail from "./pages/CMDBDetail";
@@ -24,6 +26,8 @@ const App = () => (
           <Route element={<DashboardLayout />}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/change-management" element={<ChangeManagement />} />
+            <Route path="/change-management/detail/:id" element={<ChangeManagementDetail />} />
+            <Route path="/change-management/calendar" element={<ChangeManagementCalendar />} />
             <Route path="/cmdb" element={<CMDB />} />
             <Route path="/cmdb/:category" element={<CMDBCategory />} />
             <Route path="/cmdb/detail/:id" element={<CMDBDetail />} />
