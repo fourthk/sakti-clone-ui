@@ -115,11 +115,15 @@ const ChangeManagement = () => {
   );
 
   const summaryData = [
-    { label: "Laporan Masuk", count: 44, icon: "📋" },
-    { label: "Changes in Review", count: 20, icon: "🔍" },
-    { label: "Approved", count: 9, icon: "✅" },
-    { label: "Completed", count: 5, icon: "✨" }
+    { label: "Laporan Masuk", count: mockChanges.length },
+    { label: "Changes in Review", count: mockChanges.filter(c => c.status === "In Review").length },
+    { label: "Approved", count: mockChanges.filter(c => c.status === "Approved").length },
+    { label: "Completed", count: mockChanges.filter(c => c.status === "Completed").length }
   ];
+
+  const recentActivities = mockChanges
+    .filter(c => c.status === "Approved")
+    .slice(0, 3);
 
   const handleFormClick = (change: any) => {
     navigate(`/change-management/form/${change.id}`, { state: { change } });
@@ -141,26 +145,17 @@ const ChangeManagement = () => {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         {summaryData.map((item, index) => (
-          <Card 
-            key={index} 
-            style={{ backgroundColor: "#FDFDFD", borderColor: "#384E66" }}
-            className="hover:shadow-lg transition-shadow"
-          >
+          <Card key={index} style={{ backgroundColor: "#FDFDFD", borderColor: "#384E66" }}>
             <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-3xl">{item.icon}</span>
-                <div className="h-12 w-12 rounded-full flex items-center justify-center" style={{ backgroundColor: "#384E66" }}>
-                  <span className="text-xl font-bold text-white">{item.count}</span>
-                </div>
-              </div>
-              <p className="text-sm font-medium" style={{ color: "#253040" }}>{item.label}</p>
+              <p className="text-sm text-gray-600 mb-2">{item.label}</p>
+              <p className="text-3xl font-bold" style={{ color: "#253040" }}>{item.count}</p>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* Change Calendar */}
-      <div className="mb-8">
+      {/* Change Calendar and Recent Activities */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <Card 
           style={{ backgroundColor: "#FDFDFD", borderColor: "#384E66" }}
           className="cursor-pointer hover:shadow-lg transition-shadow"
@@ -169,11 +164,30 @@ const ChangeManagement = () => {
           <CardHeader>
             <CardTitle style={{ color: "#253040" }}>Change Calendar</CardTitle>
           </CardHeader>
-          <CardContent className="flex justify-center">
+          <CardContent>
             <Calendar
               mode="single"
-              className="rounded-md border-0 scale-110"
+              className="rounded-md border-0"
             />
+          </CardContent>
+        </Card>
+
+        <Card style={{ backgroundColor: "#FDFDFD", borderColor: "#384E66" }}>
+          <CardHeader>
+            <CardTitle style={{ color: "#253040" }}>Recent Activities</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {recentActivities.map((activity) => (
+                <div key={activity.id} className="flex items-center justify-between p-3 rounded" style={{ backgroundColor: "#FAFAFA" }}>
+                  <div>
+                    <p className="font-semibold" style={{ color: "#253040" }}>{activity.id}</p>
+                    <p className="text-sm text-gray-600">{activity.type}</p>
+                  </div>
+                  <Badge className={getStatusColor(activity.status)}>{activity.status}</Badge>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>

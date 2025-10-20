@@ -15,9 +15,9 @@ const DashboardLayout = () => {
 
   return (
     <div className="min-h-screen bg-background w-full">
-      {/* Sticky Header */}
+      {/* Fixed Header */}
       <header 
-        className="sticky top-0 left-0 right-0 z-50 flex items-center justify-between px-6"
+        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6"
         style={{ 
           height: "80px", 
           backgroundColor: "#384E66"
