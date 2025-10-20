@@ -1,12 +1,14 @@
-import { ArrowLeft, Calendar as CalendarIcon } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 
 const ChangeManagementCalendar = () => {
   const navigate = useNavigate();
+  const [currentDate, setCurrentDate] = useState(new Date(2025, 0, 1)); // January 2025
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const scheduledChanges = [
     {
@@ -44,6 +46,86 @@ const ChangeManagementCalendar = () => {
     return colors[status as keyof typeof colors] || "bg-gray-100 text-gray-800";
   };
 
+  const getDaysInMonth = (date: Date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
+    
+    return { daysInMonth, startingDayOfWeek };
+  };
+
+  const renderCalendar = () => {
+    const { daysInMonth, startingDayOfWeek } = getDaysInMonth(currentDate);
+    const days = [];
+    const prevMonthDays = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
+    
+    // Previous month days
+    for (let i = startingDayOfWeek - 1; i >= 0; i--) {
+      days.push(
+        <div key={`prev-${i}`} className="p-3 text-center text-gray-400">
+          {prevMonthDays - i}
+        </div>
+      );
+    }
+    
+    // Current month days
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const hasEvent = scheduledChanges.some(sc => sc.date === dateStr);
+      const isSelected = selectedDate?.getDate() === day && 
+                        selectedDate?.getMonth() === currentDate.getMonth() &&
+                        selectedDate?.getFullYear() === currentDate.getFullYear();
+      const isToday = day === 7 || day === 10; // Highlighting dates 7 and 10 as in reference
+      
+      days.push(
+        <div
+          key={`current-${day}`}
+          className={`p-3 text-center cursor-pointer rounded-lg transition-all hover:bg-gray-100 ${
+            isToday ? 'bg-blue-500 text-white font-bold' : ''
+          } ${isSelected ? 'ring-2 ring-blue-500' : ''} ${hasEvent ? 'font-semibold' : ''}`}
+          onClick={() => {
+            const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+            setSelectedDate(newDate);
+          }}
+        >
+          {day}
+        </div>
+      );
+    }
+    
+    // Next month days
+    const remainingCells = 42 - days.length;
+    for (let day = 1; day <= remainingCells; day++) {
+      days.push(
+        <div key={`next-${day}`} className="p-3 text-center text-gray-400">
+          {day}
+        </div>
+      );
+    }
+    
+    return days;
+  };
+
+  const handlePrevMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+  };
+
+  const filteredScheduledChanges = selectedDate
+    ? scheduledChanges.filter(sc => {
+        const scDate = new Date(sc.date);
+        return scDate.getDate() === selectedDate.getDate() &&
+               scDate.getMonth() === selectedDate.getMonth() &&
+               scDate.getFullYear() === selectedDate.getFullYear();
+      })
+    : scheduledChanges;
+
   return (
     <div>
       <div className="flex items-center gap-4 mb-8">
@@ -66,24 +148,60 @@ const ChangeManagementCalendar = () => {
       {/* Full Calendar */}
       <Card style={{ backgroundColor: "#FDFDFD", borderColor: "#384E66" }} className="mb-8">
         <CardHeader>
-          <CardTitle style={{ color: "#253040" }}>Calendar View</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle style={{ color: "#253040" }}>
+              {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+            </CardTitle>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handlePrevMonth}
+                style={{ borderColor: "#384E66" }}
+              >
+                <ChevronLeft size={20} />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleNextMonth}
+                style={{ borderColor: "#384E66" }}
+              >
+                <ChevronRight size={20} />
+              </Button>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent className="flex justify-center">
-          <Calendar
-            mode="single"
-            className="rounded-md border-0"
-          />
+        <CardContent>
+          <div className="w-full max-w-4xl mx-auto">
+            {/* Calendar Header */}
+            <div className="grid grid-cols-7 gap-2 mb-2">
+              {['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map((day) => (
+                <div key={day} className="text-center font-semibold text-gray-600 p-2">
+                  {day}
+                </div>
+              ))}
+            </div>
+            {/* Calendar Grid */}
+            <div className="grid grid-cols-7 gap-2">
+              {renderCalendar()}
+            </div>
+          </div>
         </CardContent>
       </Card>
 
       {/* Schedule Section */}
       <Card style={{ backgroundColor: "#FDFDFD", borderColor: "#384E66" }}>
         <CardHeader>
-          <CardTitle style={{ color: "#253040" }}>Scheduled Changes</CardTitle>
+          <CardTitle style={{ color: "#253040" }}>
+            {selectedDate 
+              ? `Schedule for ${selectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
+              : 'Scheduled Changes'}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            {scheduledChanges.map((day, index) => (
+            {filteredScheduledChanges.map((day, index) => (
               <div key={index}>
                 <div className="flex items-center gap-3 mb-4 pb-2 border-b" style={{ borderColor: "#E5E7EB" }}>
                   <CalendarIcon size={20} style={{ color: "#384E66" }} />
